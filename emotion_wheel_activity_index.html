@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emotion Wheel Activity</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-fuchsia-100 via-sky-100 to-emerald-100 p-6">
+  <div class="mx-auto max-w-6xl">
+    <h1 class="mb-6 text-4xl font-bold">🎨 Emotion Wheel Activity</h1>
+
+    <div id="emotion-grid" class="grid grid-cols-2 gap-4 md:grid-cols-4"></div>
+    <div id="emotion-detail" class="mt-6"></div>
+  </div>
+
+  <script>
+    const emotions = {
+      Angry: makeEmotion("🔥", "bg-gradient-to-br from-red-400 via-orange-400 to-yellow-300", "border-red-300", "bg-red-50",
+        "Anger is protective and shows up when something feels unfair, blocked, or hurtful.",
+        ["irritated", "resentful", "rage", "annoyed"],
+        ["hurt", "fear", "rejection", "disrespect"],
+        ["snapping", "blaming", "withdrawing", "sarcasm"],
+        ["pause", "breathe", "name hurt", "use clear language", "take space"],
+        ["What boundary might need to be set?", "What is the anger protecting?", "What’s underneath this feeling?"]
+      ),
+      Anxious: makeEmotion("⚡", "bg-gradient-to-br from-yellow-300 via-amber-300 to-orange-300", "border-amber-300", "bg-amber-50",
+        "Anxiety is your brain trying to predict and prepare for uncertainty.",
+        ["nervous", "worried", "panicky", "uneasy"],
+        ["fear", "uncertainty", "pressure", "self-doubt"],
+        ["overthinking", "avoidance", "checking"],
+        ["grounding", "slow breathing", "next step focus", "reduce input"],
+        ["What are you predicting?", "Is this a fact or a fear?", "What is actually in your control?"]
+      ),
+      Sad: makeEmotion("💧", "bg-gradient-to-br from-blue-300 to-indigo-300", "border-blue-300", "bg-blue-50",
+        "Sadness shows up when something meaningful is lost or disappointing.",
+        ["down", "heavy", "low", "tearful"],
+        ["grief", "loss", "loneliness", "disappointment"],
+        ["withdrawing", "low energy", "quiet"],
+        ["connect", "rest", "gentle action", "self-compassion"],
+        ["What mattered here?", "What are you missing?", "What would support look like?"]
+      ),
+      Shame: makeEmotion("🫥", "bg-gradient-to-br from-pink-300 to-fuchsia-300", "border-pink-300", "bg-pink-50",
+        "Shame is the feeling that something is wrong with you.",
+        ["embarrassed", "inadequate", "worthless"],
+        ["fear of rejection", "judgment", "exposure"],
+        ["hiding", "people-pleasing", "defensiveness"],
+        ["self-compassion", "reality check", "talk to safe person"],
+        ["Is this about behavior or identity?", "What would you say to a friend?", "What is actually true?"]
+      ),
+      Numb: makeEmotion("🧊", "bg-gradient-to-br from-gray-300 to-slate-300", "border-gray-300", "bg-gray-50",
+        "Numbness is a protective shutdown when things feel overwhelming.",
+        ["blank", "flat", "detached"],
+        ["overload", "fatigue", "shutdown"],
+        ["checking out", "autopilot"],
+        ["grounding", "small steps", "sensory awareness"],
+        ["What might be too much right now?", "What’s one small step back in?", "What helps you feel again?"]
+      ),
+      Frustrated: makeEmotion("🎯", "bg-gradient-to-br from-green-300 to-emerald-300", "border-green-300", "bg-green-50",
+        "Frustration happens when progress is blocked.",
+        ["annoyed", "irritated", "stuck"],
+        ["disappointment", "confusion", "impatience"],
+        ["giving up", "rushing", "self-criticism"],
+        ["break steps", "adjust expectations", "ask for help"],
+        ["What’s not working?", "What can you change?", "What’s the next small step?"]
+      ),
+      Lonely: makeEmotion("🌙", "bg-gradient-to-br from-purple-300 to-indigo-300", "border-purple-300", "bg-purple-50",
+        "Loneliness is a lack of meaningful connection.",
+        ["isolated", "left out", "unseen"],
+        ["disconnection", "longing", "rejection"],
+        ["withdrawing", "avoiding", "scrolling"],
+        ["reach out", "shared space", "honest communication"],
+        ["What kind of connection do you need?", "Who is safe to reach out to?", "What’s one small step?"]
+      ),
+      Overwhelmed: makeEmotion("🌪️", "bg-gradient-to-br from-rose-300 to-orange-300", "border-rose-300", "bg-rose-50",
+        "Overwhelm is too much input or demand.",
+        ["flooded", "stressed", "scattered"],
+        ["pressure", "mental load", "exhaustion"],
+        ["freezing", "avoidance"],
+        ["reduce list", "focus one thing", "pause"],
+        ["What can you remove?", "What matters most?", "What’s the smallest step?"]
+      ),
+      Fearful: makeEmotion("😨", "bg-gradient-to-br from-orange-300 to-yellow-300", "border-orange-300", "bg-orange-50",
+        "Fear shows up when something feels threatening.",
+        ["scared", "afraid", "panicked"],
+        ["danger", "risk", "uncertainty"],
+        ["avoidance", "freeze", "escape"],
+        ["ground", "assess reality", "slow down"],
+        ["Is this danger real or perceived?", "What helps you feel safe?", "What’s one step forward?"]
+      ),
+      Joyful: makeEmotion("😊", "bg-gradient-to-br from-yellow-200 to-pink-200", "border-yellow-300", "bg-yellow-50",
+        "Joy reflects connection, success, or pleasure.",
+        ["happy", "content", "excited"],
+        ["connection", "success", "pleasure"],
+        ["sharing", "engaging", "celebrating"],
+        ["savor", "share", "stay present"],
+        ["What created this feeling?", "How can you create more of it?", "Who can you share it with?"]
+      ),
+      Disgusted: makeEmotion("🤢", "bg-gradient-to-br from-green-200 to-lime-200", "border-lime-300", "bg-lime-50",
+        "Disgust protects you from things that feel unsafe or wrong.",
+        ["repulsed", "grossed out"],
+        ["boundary violation", "aversion"],
+        ["avoidance", "withdrawal"],
+        ["respect boundaries", "step away"],
+        ["What feels off?", "What boundary is needed?", "What protects you here?"]
+      ),
+      Surprised: makeEmotion("😲", "bg-gradient-to-br from-sky-200 to-blue-200", "border-sky-300", "bg-sky-50",
+        "Surprise is a reaction to the unexpected.",
+        ["shocked", "startled"],
+        ["uncertainty", "novelty"],
+        ["freeze", "react quickly"],
+        ["pause", "assess"],
+        ["What just happened?", "Is this good or bad?", "What’s the next step?"]
+      ),
+      Guilty: makeEmotion("😔", "bg-gradient-to-br from-gray-200 to-blue-200", "border-gray-300", "bg-gray-50",
+        "Guilt is about behavior, not identity.",
+        ["remorseful", "regretful"],
+        ["values conflict", "mistake"],
+        ["apologizing", "overthinking"],
+        ["repair", "learn", "move forward"],
+        ["What can you repair?", "What did you learn?", "What would you do differently?"]
+      ),
+      Hopeful: makeEmotion("🌱", "bg-gradient-to-br from-green-200 to-teal-200", "border-teal-300", "bg-teal-50",
+        "Hope reflects belief in positive change.",
+        ["optimistic", "encouraged"],
+        ["possibility", "future"],
+        ["planning", "trying"],
+        ["take action", "build momentum"],
+        ["What are you hopeful about?", "What supports that hope?", "What’s your next step?"]
+      ),
+      Confused: makeEmotion("🤔", "bg-gradient-to-br from-gray-200 to-yellow-200", "border-yellow-300", "bg-yellow-50",
+        "Confusion signals a need for clarity.",
+        ["unsure", "lost"],
+        ["lack of info", "uncertainty"],
+        ["freezing", "guessing"],
+        ["ask questions", "simplify"],
+        ["What’s unclear?", "What info do you need?", "Who can help?"]
+      ),
+      Excited: makeEmotion("🤩", "bg-gradient-to-br from-pink-200 to-orange-200", "border-orange-300", "bg-orange-50",
+        "Excitement is high-energy anticipation.",
+        ["energized", "thrilled"],
+        ["anticipation", "joy"],
+        ["impulsivity", "overcommitment"],
+        ["channel energy", "stay grounded"],
+        ["What are you excited about?", "How do you stay balanced?", "What’s one intentional step?"]
+      )
+    };
+
+    const emotionGrid = document.getElementById('emotion-grid');
+    const emotionDetail = document.getElementById('emotion-detail');
+
+    Object.entries(emotions).forEach(([name, emotion]) => {
+      const button = document.createElement('button');
+      button.className = `rounded-xl border-4 ${emotion.border} ${emotion.color} p-4 text-left shadow-lg transition hover:scale-[1.02]`;
+      button.innerHTML = `
+        <div class="text-2xl">${emotion.emoji}</div>
+        <div class="font-bold">${name}</div>
+      `;
+      button.addEventListener('click', () => renderEmotion(name, emotion));
+      emotionGrid.appendChild(button);
+    });
+
+    function renderEmotion(name, emotion) {
+      emotionDetail.innerHTML = `
+        <div class="rounded-2xl border-4 ${emotion.border} ${emotion.bg} p-6 shadow-xl">
+          <h2 class="mb-2 text-2xl font-bold">${emotion.emoji} ${name}</h2>
+          <p>${emotion.description}</p>
+          ${renderSection('🎨 Shades', emotion.shades)}
+          ${renderSection('🧩 Underneath', emotion.underneath)}
+          ${renderSection('🎭 Reactions', emotion.reactions)}
+          ${renderSection('🛠️ Try This', emotion.coping)}
+          ${renderSection('💬 Discussion', emotion.questions)}
+        </div>
+      `;
+    }
+
+    function renderSection(title, items) {
+      return `
+        <div class="mt-4">
+          <strong>${title}</strong>
+          <ul class="mt-1 ml-5 list-disc">
+            ${items.map(item => `<li>${item}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    function makeEmotion(emoji, color, border, bg, description, shades, underneath, reactions, coping, questions) {
+      return { emoji, color, border, bg, description, shades, underneath, reactions, coping, questions };
+    }
+  </script>
+</body>
+</html>
